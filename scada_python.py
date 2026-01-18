@@ -1,4 +1,5 @@
 ﻿import sys
+from tkinter import SEL
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton
 from PyQt5.QtCore import Qt, QTimer, QPointF
 from PyQt5.QtGui import QPainter, QColor, QPen, QPainterPath
@@ -103,6 +104,7 @@ class Zawor:
         self.otwarty = False
         self.rozmiar = 15
 
+    # Funkcja rysujaca zawor
     def draw(self, painter):
         kolor = QColor(0, 255, 0) if self.otwarty else QColor(255, 50, 20)
         
@@ -137,6 +139,7 @@ class Symulacja(QWidget):
         zbiornik.aktualizuj_poziom()
         self.update()
 
+    #Funkcja tworzaca przyciski zaworow
     def stworz_przycisk_zaworu(self, x, y, nazwa):
             btn = QPushButton(nazwa, self)
             btn.setGeometry(x, y, 90, 30)
@@ -144,6 +147,7 @@ class Symulacja(QWidget):
             btn.setStyleSheet("""QPushButton {background-color: #444; color: white;} QPushButton:checked {background-color: #f39c12; color: white; font-weight: bold;}""") 
             return btn
 
+    # Funckja wyswietlajaca status zbiornikow
     def status_zbiornikow(self, painter):
         painter.setPen(QColor(243, 156, 18))
         painter.drawText(780, 40, "STATUS ZBIORNIKOW:")
@@ -202,6 +206,7 @@ class Symulacja(QWidget):
 
         self.running = False
         self.flow_speed = 0.6
+        self.kat_pompy = 0.0
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.logika_przeplywu)
@@ -218,6 +223,7 @@ class Symulacja(QWidget):
         self.btn_main.setStyleSheet("background-color: #c0392b; color: white; font-weight: bold;")
         self.btn_main.clicked.connect(self.przelacz_zasilanie)
 
+    # Funkcja umozliwiajaca proces symulacji
     def przelacz_zasilanie(self):
         if self.running:
             self.timer.stop()
@@ -231,20 +237,13 @@ class Symulacja(QWidget):
 
     # Funkcja logiki przeplywu
     def logika_przeplywu(self):
-        otwarty_A = self.btn_A.isChecked()
-        otwarty_B = self.btn_B.isChecked()
-        otwarty_C = self.btn_C.isChecked()
-        otwarty_A2 = self.btn_A2.isChecked()
-        otwarty_B2 = self.btn_B2.isChecked()
-        otwarty_C2 = self.btn_C2.isChecked()
+        self.vA.otwarty = self.btn_A.isChecked()
+        self.vB.otwarty = self.btn_B.isChecked()
+        self.vC.otwarty = self.btn_C.isChecked()
+        self.vA2.otwarty = self.btn_A2.isChecked()
+        self.vB2.otwarty = self.btn_B2.isChecked()
+        self.vC2.otwarty = self.btn_C2.isChecked()
 
-        self.vA.otwarty = otwarty_A
-        self.vB.otwarty = otwarty_B
-        self.vC.otwarty = otwarty_C
-        self.vA2.otwarty = otwarty_A2
-        self.vB2.otwarty = otwarty_B2
-        self.vC2.otwarty = otwarty_C2
-        
         p_A = False
         if self.btn_A.isChecked() and not self.z1.czy_pusty() and not self.z2.czy_pelny():
             ilosc = self.z1.usun_ciecz(self.flow_speed)
@@ -291,6 +290,9 @@ class Symulacja(QWidget):
         self.rura7.ustaw_przeplyw(p_A2 or p_B2)
         self.rura8.ustaw_przeplyw(p_A2 or p_B2 or p_C2)
 
+        if self.rura8.czy_plynie:
+            self.kat_pompy = (self.kat_pompy + 10) % 360
+
         self.update()
 
     # Funkcja rysujaca wszystko
@@ -304,6 +306,23 @@ class Symulacja(QWidget):
         for v in self.zawory:
             v.draw(p)
         self.status_zbiornikow(p)
+
+        # Pompa wody
+        px, py = 670, 300
+
+        p.setPen(QPen(Qt.white, 2))
+        p.setBrush(QColor(60, 60, 60))
+        p.drawEllipse(px - 25, py - 25, 50, 50)
+
+        p.save()
+        p.translate(px, py)
+        p.rotate(self.kat_pompy)
+
+        p.setPen(QPen(QColor(243, 156, 18), 4))
+        p.drawLine(-15, 0, 15, 0)
+        p.drawLine(0, -15, 0, 15)
+
+        p.restore()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
