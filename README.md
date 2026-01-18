@@ -1,3 +1,4 @@
 Projekt "Arkanoid" na przedmiot Informatyka II </br>
 Autor: Mateusz Pączkowski 
 
+Projekt systemu SCADA, w języku Python, umożliwia symulację dystrybucji cieczy ze zbiornika głównego do trzech sekcji odbiorczych. Proces inicjowany jest za pomocą charakterystycznego czerwonego przycisku „Włącz zasilanie”, który aktywuje logikę systemową oraz cykliczne odświeżanie widoku aplikacji, zapewniając płynność działania wszystkich animacji. Sterowanie przepływem odbywa się poprzez zmianę stanów zaworów za pomocą przycisków sterujących. Po wybraniu danej sekcji odpowiadający jej przycisk zmienia kolor na pomarańczowy, natomiast w momencie faktycznego przepływu wody przez zawór, jego ikona na schemacie zmienia barwę na zieloną. Stały nadzór nad parametrami procesu umożliwia umieszczona w lewym górnym rogu tablica statusów, która w czasie rzeczywistym prezentuje aktualną ilość cieczy w litrach oraz jej poziom procentowy dla każdego ze zbiorników w systemie.
